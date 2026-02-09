@@ -306,140 +306,37 @@ def audit_report(start_date, end_date, user=None):
 
 ### 3-2-1 Strategy
 
-**NOTE:** The following examples are conceptual. In production, use dedicated backup tools (pg_basebackup, Barman, AWS Backup) instead of directly calling shell commands.
+**Business Requirement:** Accounting data must be protected with redundant backups following the 3-2-1 rule:
+- **3 copies** of data (production + 2 backups)
+- **2 different media types** (e.g., local SSD + external storage)
+- **1 off-site copy** (cloud or remote location)
 
-```python
-import shutil
-import subprocess
-from datetime import datetime, timedelta
-from pathlib import Path
+**Implementation Approach:**
+1. Use your database provider's built-in backup solutions (managed backups, automated snapshots)
+2. Schedule daily automated backups during low-activity hours
+3. Store backups in multiple locations (local fast storage + remote cloud storage)
+4. Implement automated backup verification to ensure data integrity
+5. Retain backups according to legal requirements (minimum 10 years for accounting data)
+6. Document and regularly test disaster recovery procedures
 
-class BackupManager:
-    """
-    3 copies, 2 media, 1 off-site
-    """
-    def __init__(self):
-        self.backup_local_1 = Path('/backups/local_ssd')
-        self.backup_local_2 = Path('/backups/local_hdd')
-        self.backup_cloud = 's3://ksef-backups/'
-        self.db_name = 'ksef_production'
+**For Production Systems:**
+- Leverage managed database services (AWS RDS, Azure Database, Google Cloud SQL) with automated backup features
+- Use enterprise backup solutions designed for accounting/financial data
+- Implement monitoring and alerts for backup failures
+- Ensure backup processes don't interfere with accounting operations
 
-    def _validate_path(self, path):
-        """Path validation (prevent path traversal)"""
-        path = Path(path).resolve()
-        # Ensure path is in allowed directory
-        allowed_dirs = [self.backup_local_1, self.backup_local_2]
-        if not any(path.is_relative_to(d) for d in allowed_dirs):
-            raise ValueError(f"Invalid path: {path}")
-        return path
+### KSeF Synchronization for Disaster Recovery
 
-    def daily_backup(self):
-        """
-        Daily backup (automatic cron)
-        """
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        db_dump = f'ksef_db_{timestamp}.sql'
+**Key Principle:** KSeF is the source of truth for all invoices. If local data is lost, it can be reconstructed from KSeF.
 
-        # 1. Database dump (SAFE - use subprocess.run)
-        try:
-            with open(db_dump, 'w') as f:
-                subprocess.run(
-                    ['pg_dump', self.db_name],
-                    stdout=f,
-                    check=True,
-                    timeout=3600  # 1 hour max
-                )
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Backup failed: {e}")
+**Recovery Process:**
+1. **Restore from backup** - Use your infrastructure provider's restore procedures
+2. **Sync with KSeF** - Query KSeF API for invoices from the last 7-30 days (depending on backup age)
+3. **Verify data integrity** - Compare local invoice records with KSeF to identify any discrepancies
+4. **Reconcile differences** - Update local database with authoritative KSeF data
+5. **Notify stakeholders** - Alert accounting team when recovery is complete and system status
 
-        # 2. Copy 1 - SSD (fast restore)
-        shutil.copy(db_dump, self.backup_local_1 / db_dump)
-
-        # 3. Copy 2 - HDD (cheaper medium)
-        shutil.copy(db_dump, self.backup_local_2 / db_dump)
-
-        # 4. Copy 3 - Cloud (off-site) - SAFE
-        subprocess.run(
-            ['aws', 's3', 'cp', db_dump, self.backup_cloud],
-            check=True,
-            timeout=7200  # 2 hours max
-        )
-
-        # 5. Delete old backups (>30 days)
-        self.cleanup_old_backups(days=30)
-
-    def restore_from_backup(self, backup_file):
-        """
-        Restore from backup
-        NOTE: In production use dedicated tools (pg_restore, Barman)
-        """
-        # Path validation
-        backup_file = self._validate_path(backup_file)
-
-        if not backup_file.exists():
-            raise FileNotFoundError(f"Backup does not exist: {backup_file}")
-
-        try:
-            # 1. Stop application (SAFE - hardcoded list)
-            subprocess.run(
-                ['systemctl', 'stop', 'ksef-app'],
-                check=True,
-                timeout=60
-            )
-
-            # 2. Restore database (SAFE - no shell injection)
-            with open(backup_file, 'r') as f:
-                subprocess.run(
-                    ['psql', self.db_name],
-                    stdin=f,
-                    check=True,
-                    timeout=3600
-                )
-
-            # 3. Verification
-            if not self.verify_database_integrity():
-                raise RuntimeError("Integrity verification failed")
-
-            # 4. Start application
-            subprocess.run(
-                ['systemctl', 'start', 'ksef-app'],
-                check=True,
-                timeout=60
-            )
-
-            return True
-
-        except Exception as e:
-            # Rollback - restart from previous version
-            subprocess.run(['systemctl', 'start', 'ksef-app'])
-            raise RuntimeError(f"Restore failed: {e}")
-```
-
-### KSeF Synchronization
-
-```python
-def disaster_recovery():
-    """
-    Disaster recovery procedure
-    """
-    # 1. Restore database from latest backup
-    latest_backup = find_latest_backup()
-    restore_from_backup(latest_backup)
-
-    # 2. Sync with KSeF (last 7 days)
-    # KSeF is source of truth for invoices
-    last_week = datetime.now() - timedelta(days=7)
-    sync_invoices_from_ksef(date_from=last_week)
-
-    # 3. Verify integrity
-    mismatches = verify_data_integrity()
-    if mismatches:
-        log_critical(f"Detected {len(mismatches)} discrepancies")
-        notify_admin(mismatches)
-
-    # 4. Notify
-    send_notification("System recovered successfully", severity='INFO')
-```
+**Important:** Test disaster recovery procedures quarterly to ensure they work when needed.
 
 ---
 
@@ -578,27 +475,18 @@ def secure_ksef_connection():
 
 ## Secure Coding Practices
 
-### 1. DO NOT use risky functions
+### 1. Avoid Dynamic Code Execution
 
-**❌ NEVER:**
-```python
-# DANGEROUS - Command injection
-os.system(f"pg_dump {database_name}")  # ❌
-eval(user_input)  # ❌
-exec(code_from_api)  # ❌
-subprocess.run(cmd, shell=True)  # ❌
-```
+**❌ NEVER use:**
+- `eval()` or `exec()` on user input or external data
+- Shell command execution with string concatenation
+- Dynamic SQL queries built with string concatenation
 
-**✅ INSTEAD:**
-```python
-# SAFE - Argument list, no shell
-subprocess.run(
-    ['pg_dump', database_name],
-    check=True,
-    timeout=3600,
-    capture_output=True
-)
-```
+**✅ INSTEAD use:**
+- Parameterized database queries (prevents SQL injection)
+- Validated, type-checked input data
+- Structured API calls with proper argument handling
+- Built-in libraries and frameworks designed for accounting operations
 
 ### 2. Input Validation
 
@@ -625,12 +513,13 @@ DB_CONFIG = {
 }
 ```
 
-### 4. Use Dedicated Tools
+### 4. Use Enterprise-Grade Solutions
 
-Instead of custom backup scripts:
-- **PostgreSQL:** pg_basebackup, Barman, pgBackRest
-- **AWS:** AWS Backup, RDS Automated Backups
-- **Monitoring:** Prometheus, Grafana, DataDog
+For production accounting systems:
+- **Database:** Managed database services with automated backups and point-in-time recovery
+- **Monitoring:** Professional monitoring platforms with alerting capabilities
+- **Security:** Enterprise identity management and access control systems
+- **Compliance:** Audit logging solutions designed for financial data
 
 ---
 

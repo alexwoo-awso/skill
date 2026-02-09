@@ -306,140 +306,37 @@ def audit_report(start_date, end_date, user=None):
 
 ### Strategia 3-2-1
 
-**UWAGA:** Poniższe przykłady mają charakter koncepcyjny. W produkcji używaj dedykowanych narzędzi backup (pg_basebackup, Barman, AWS Backup) zamiast bezpośredniego wywoływania shell commands.
+**Wymagania biznesowe:** Dane księgowe muszą być chronione za pomocą redundantnych kopii zapasowych według zasady 3-2-1:
+- **3 kopie** danych (produkcja + 2 backupy)
+- **2 różne typy nośników** (np. lokalny SSD + zewnętrzny storage)
+- **1 kopia poza siedzibą** (chmura lub zdalna lokalizacja)
 
-```python
-import shutil
-import subprocess
-from datetime import datetime, timedelta
-from pathlib import Path
+**Podejście implementacyjne:**
+1. Używaj wbudowanych rozwiązań backup dostawcy bazy danych (managed backups, automated snapshots)
+2. Zaplanuj codzienne automatyczne backupy w godzinach niskiej aktywności
+3. Przechowuj backupy w wielu lokalizacjach (lokalny szybki storage + zdalna chmura)
+4. Zaimplementuj automatyczną weryfikację backupów dla zapewnienia integralności danych
+5. Zachowuj backupy zgodnie z wymogami prawnymi (minimum 10 lat dla danych księgowych)
+6. Dokumentuj i regularnie testuj procedury disaster recovery
 
-class BackupManager:
-    """
-    3 kopie, 2 media, 1 off-site
-    """
-    def __init__(self):
-        self.backup_local_1 = Path('/backups/local_ssd')
-        self.backup_local_2 = Path('/backups/local_hdd')
-        self.backup_cloud = 's3://ksef-backups/'
-        self.db_name = 'ksef_production'
+**Dla systemów produkcyjnych:**
+- Wykorzystuj zarządzane usługi baz danych (AWS RDS, Azure Database, Google Cloud SQL) z funkcjami automatycznego backupu
+- Używaj rozwiązań enterprise backup zaprojektowanych dla danych księgowych/finansowych
+- Zaimplementuj monitoring i alerty dla niepowodzeń backupu
+- Upewnij się, że procesy backup nie zakłócają operacji księgowych
 
-    def _validate_path(self, path):
-        """Walidacja ścieżki (zapobieganie path traversal)"""
-        path = Path(path).resolve()
-        # Upewnij się że ścieżka jest w dozwolonym katalogu
-        allowed_dirs = [self.backup_local_1, self.backup_local_2]
-        if not any(path.is_relative_to(d) for d in allowed_dirs):
-            raise ValueError(f"Nieprawidłowa ścieżka: {path}")
-        return path
+### Synchronizacja z KSeF dla Disaster Recovery
 
-    def daily_backup(self):
-        """
-        Backup codzienny (automatyczny cron)
-        """
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        db_dump = f'ksef_db_{timestamp}.sql'
+**Kluczowa zasada:** KSeF jest źródłem prawdy dla wszystkich faktur. Jeśli lokalne dane zostaną utracone, mogą być zrekonstruowane z KSeF.
 
-        # 1. Dump bazy danych (BEZPIECZNE - użyj subprocess.run)
-        try:
-            with open(db_dump, 'w') as f:
-                subprocess.run(
-                    ['pg_dump', self.db_name],
-                    stdout=f,
-                    check=True,
-                    timeout=3600  # 1 godzina max
-                )
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Backup failed: {e}")
+**Proces odzyskiwania:**
+1. **Przywróć z backupu** - Użyj procedur restore dostawcy infrastruktury
+2. **Synchronizuj z KSeF** - Pobierz faktury z KSeF API z ostatnich 7-30 dni (w zależności od wieku backupu)
+3. **Weryfikuj integralność danych** - Porównaj lokalne zapisy faktur z KSeF aby zidentyfikować rozbieżności
+4. **Uzgodnij różnice** - Zaktualizuj lokalną bazę danych autorytatywnymi danymi z KSeF
+5. **Powiadom zainteresowanych** - Poinformuj zespół księgowy gdy odzyskiwanie jest zakończone i system działa
 
-        # 2. Kopia 1 - SSD (szybki restore)
-        shutil.copy(db_dump, self.backup_local_1 / db_dump)
-
-        # 3. Kopia 2 - HDD (tańsze medium)
-        shutil.copy(db_dump, self.backup_local_2 / db_dump)
-
-        # 4. Kopia 3 - Cloud (off-site) - BEZPIECZNE
-        subprocess.run(
-            ['aws', 's3', 'cp', db_dump, self.backup_cloud],
-            check=True,
-            timeout=7200  # 2 godziny max
-        )
-
-        # 5. Usuń stare backupy (>30 dni)
-        self.cleanup_old_backups(days=30)
-
-    def restore_from_backup(self, backup_file):
-        """
-        Przywróć z backupu
-        UWAGA: W produkcji używaj dedykowanych narzędzi (pg_restore, Barman)
-        """
-        # Walidacja ścieżki
-        backup_file = self._validate_path(backup_file)
-
-        if not backup_file.exists():
-            raise FileNotFoundError(f"Backup nie istnieje: {backup_file}")
-
-        try:
-            # 1. Stop aplikacji (BEZPIECZNE - lista hardcoded)
-            subprocess.run(
-                ['systemctl', 'stop', 'ksef-app'],
-                check=True,
-                timeout=60
-            )
-
-            # 2. Restore bazy (BEZPIECZNE - bez shell injection)
-            with open(backup_file, 'r') as f:
-                subprocess.run(
-                    ['psql', self.db_name],
-                    stdin=f,
-                    check=True,
-                    timeout=3600
-                )
-
-            # 3. Weryfikacja
-            if not self.verify_database_integrity():
-                raise RuntimeError("Weryfikacja integralności failed")
-
-            # 4. Start aplikacji
-            subprocess.run(
-                ['systemctl', 'start', 'ksef-app'],
-                check=True,
-                timeout=60
-            )
-
-            return True
-
-        except Exception as e:
-            # Rollback - restart z poprzedniej wersji
-            subprocess.run(['systemctl', 'start', 'ksef-app'])
-            raise RuntimeError(f"Restore failed: {e}")
-```
-
-### Synchronizacja z KSeF
-
-```python
-def disaster_recovery():
-    """
-    Procedura odzyskiwania po awarii
-    """
-    # 1. Przywróć bazę z ostatniego backupu
-    latest_backup = find_latest_backup()
-    restore_from_backup(latest_backup)
-
-    # 2. Synchronizuj z KSeF (ostatnie 7 dni)
-    # KSeF jest źródłem prawdy dla faktur
-    last_week = datetime.now() - timedelta(days=7)
-    sync_invoices_from_ksef(date_from=last_week)
-
-    # 3. Weryfikuj integralność
-    mismatches = verify_data_integrity()
-    if mismatches:
-        log_critical(f"Wykryto {len(mismatches)} rozbieżności")
-        notify_admin(mismatches)
-
-    # 4. Powiadom
-    send_notification("System odzyskany pomyślnie", severity='INFO')
-```
+**Ważne:** Testuj procedury disaster recovery kwartalnie aby upewnić się, że działają gdy są potrzebne.
 
 ---
 
@@ -578,27 +475,18 @@ def secure_ksef_connection():
 
 ## Bezpieczne Praktyki Programistyczne
 
-### 1. NIE używaj ryzykownych funkcji
+### 1. Unikaj dynamicznego wykonywania kodu
 
-**❌ NIGDY:**
-```python
-# NIEBEZPIECZNE - Command injection
-os.system(f"pg_dump {database_name}")  # ❌
-eval(user_input)  # ❌
-exec(code_from_api)  # ❌
-subprocess.run(cmd, shell=True)  # ❌
-```
+**❌ NIGDY nie używaj:**
+- `eval()` lub `exec()` na danych wejściowych użytkownika lub danych zewnętrznych
+- Wykonywania poleceń shell z konkatenacją stringów
+- Dynamicznych zapytań SQL budowanych przez konkatenację stringów
 
-**✅ ZAMIAST TEGO:**
-```python
-# BEZPIECZNE - Lista argumentów, bez shell
-subprocess.run(
-    ['pg_dump', database_name],
-    check=True,
-    timeout=3600,
-    capture_output=True
-)
-```
+**✅ ZAMIAST TEGO używaj:**
+- Sparametryzowanych zapytań do bazy danych (zapobiega SQL injection)
+- Walidowanych, sprawdzonych typowo danych wejściowych
+- Strukturalnych wywołań API z odpowiednią obsługą argumentów
+- Wbudowanych bibliotek i frameworków zaprojektowanych dla operacji księgowych
 
 ### 2. Walidacja Wejścia
 
@@ -625,12 +513,13 @@ DB_CONFIG = {
 }
 ```
 
-### 4. Używaj Dedykowanych Narzędzi
+### 4. Używaj rozwiązań klasy enterprise
 
-Zamiast własnych skryptów backup:
-- **PostgreSQL:** pg_basebackup, Barman, pgBackRest
-- **AWS:** AWS Backup, RDS Automated Backups
-- **Monitoring:** Prometheus, Grafana, DataDog
+Dla produkcyjnych systemów księgowych:
+- **Bazy danych:** Zarządzane usługi baz danych z automatycznymi backupami i point-in-time recovery
+- **Monitoring:** Profesjonalne platformy monitoringu z możliwościami alertowania
+- **Bezpieczeństwo:** Enterprise systemy zarządzania tożsamością i kontroli dostępu
+- **Compliance:** Rozwiązania audit logging zaprojektowane dla danych finansowych
 
 ---
 

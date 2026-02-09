@@ -4,10 +4,10 @@
 
 **👤 Dla ludzi:** Zobacz [README.md](./README.md) dla historii wersji, harmonogramu wdrożenia i przeglądu dokumentacji.
 
-**⚠️ BEZPIECZEŃSTWO & INFORMACJA VIRUSTOTAL:**
-Ten skill zawiera edukacyjne przykłady kodu demonstrujące bezpieczne praktyki kodowania dla operacji backup/restore. Pokazane komendy systemowe (`pg_dump`, `psql`, `aws`, `systemctl`) są przykładami ilustracyjnymi używającymi BEZPIECZNYCH metod (subprocess.run z listą argumentów, walidacja ścieżek, timeouty).
-**NIE JEST TO KOD WYKONYWALNY** - Ten skill dostarcza wiedzę agentowi AI, a nie wykonywalne skrypty.
-Przed użyciem w produkcji: przeprowadź security review, używaj dedykowanych narzędzi (pg_basebackup, AWS Backup), waliduj wszystkie wejścia, stosuj principle of least privilege.
+**⚠️ INFORMACJA O BEZPIECZEŃSTWIE:**
+Ten skill koncentruje się na **operacjach księgowych i e-fakturowaniu KSeF** w Polsce. Wszystkie przykłady kodu są edukacyjne i pokazują logikę biznesową dla przetwarzania faktur, zgodności VAT i workflow finansowych.
+**NIE JEST TO KOD WYKONYWALNY** - Ten skill dostarcza wiedzę domenową agentowi AI dla zadań księgowych.
+Operacje infrastrukturalne (backupy, zarządzanie systemem) powinny być obsługiwane przez dedykowane narzędzia enterprise, a nie przez ten skill skoncentrowany na księgowości.
 
 ---
 

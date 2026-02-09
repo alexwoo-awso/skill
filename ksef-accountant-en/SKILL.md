@@ -4,10 +4,10 @@
 
 **👤 For humans:** See [README.md](./README.md) for version history, deployment schedule, and documentation overview.
 
-**⚠️ SECURITY & VIRUSTOTAL NOTICE:**
-This skill contains educational code examples demonstrating secure coding practices for backup/restore operations. System commands shown (`pg_dump`, `psql`, `aws`, `systemctl`) are illustrative examples using SAFE methods (subprocess.run with argument lists, path validation, timeouts).
-**NOT EXECUTABLE CODE** - This skill provides knowledge to an AI agent, not executable scripts.
-Before production use: conduct security review, use dedicated tools (pg_basebackup, AWS Backup), validate all inputs, apply principle of least privilege.
+**⚠️ SECURITY NOTICE:**
+This skill focuses on **accounting and KSeF e-invoicing operations** in Poland. All code examples are educational and demonstrate business logic for invoice processing, VAT compliance, and financial workflows.
+**NOT EXECUTABLE CODE** - This skill provides domain knowledge to an AI agent for accounting tasks.
+Infrastructure operations (backups, system management) should be handled by dedicated enterprise tools, not by this accounting-focused skill.
 
 ---
 
