@@ -2,6 +2,12 @@
 
 **Skill dla autonomicznego agenta AI wspierającego obsługę Krajowego Systemu e-Faktur (KSeF) w Polsce.**
 
+**🤖 Dla Agentów AI:** Zobacz [SKILL.md](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-pl/SKILL.md) - to twój punkt wejścia.
+
+**👤 Dla Ludzi:** Jesteś we właściwym miejscu - ten README zawiera historię wersji, harmonogram wdrożenia i przegląd dokumentacji.
+
+---
+
 ## 📋 Opis
 
 Kompleksowa wiedza i kompetencje do obsługi:
@@ -14,9 +20,31 @@ Kompleksowa wiedza i kompetencje do obsługi:
 - Integracje (ERP, CRM, Banking)
 - Compliance (Biała Lista VAT, RODO)
 
-## 🚀 Quick Start
+## 📅 Harmonogram Wdrożenia KSeF
 
-Zobacz główny plik [SKILL.md](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-pl/SKILL.md) dla przeglądu kompetencji.
+**UWAGA:** Harmonogram wdrożenia KSeF oraz szczegóły przepisów mogą ulec zmianie.
+
+### Kluczowe Daty (planowane)
+- **1 lutego 2026** - KSeF 2.0 produkcja, FA(3) obowiązkowa (dla firm >200 mln PLN obrotu w 2024)
+- **1 kwietnia 2026** - obowiązek wystawiania dla firm ≤200 mln PLN
+- **1 stycznia 2027** - obowiązek wystawiania dla mikroprzedsiębiorców
+- **31 grudnia 2026** - planowany koniec grace period (brak kar)
+
+### Środowisko Techniczne
+```
+DEMO:       https://ksef-demo.mf.gov.pl
+PRODUKCJA:  https://ksef.mf.gov.pl
+API DOCS:   https://ksef.mf.gov.pl/api/docs
+```
+
+**Wymagania:**
+- Struktura: FA(3) ver. 1-0E
+- Format: XML zgodny ze schematem
+- Walidacja: automatyczna przy przyjęciu
+
+**📄 Pełne szczegóły prawne:** [ksef-legal-status.md](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-pl/ksef-legal-status.md)
+
+## 📚 Dokumentacja
 
 Szczegółowa dokumentacja (pliki referencyjne):
 - [Stan prawny i harmonogram](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-pl/ksef-legal-status.md)
@@ -52,13 +80,39 @@ Wszystkie pliki w root (flat hierarchy dla clawhub.ai):
 
 ## 📝 Wersja
 
-**2.1.4** - Agent-compatible links
+**2.2.0** (9 lutego 2026) - Uporządkowanie struktury
 
-### Changelog
-- **v2.1.4** - Zmiana wszystkich relatywnych linków markdown na absolutne (GitHub) dla kompatybilności z clawhub.ai
-- **v2.1.2** - Fixed all internal links (moved files from docs/ to root)
-- **v2.1.1** - Security improvements (no `os.system`, added SECURITY.md)
-- **v2.1.0** - Progressive disclosure refactor
+### Historia Wersji
+
+**v2.2.0 (9 lutego 2026)**
+- Przeniesienie treści dla ludzi do README.md
+- SKILL.md teraz czysty entrypoint dla agentów AI
+- Przeniesienie harmonogramu wdrożenia i historii wersji do README
+- Zmiana referencji {baseDir} na relatywne linki markdown (./plik.md)
+- Rozszerzone zastrzeżenie bezpieczeństwa dla kompatybilności z VirusTotal
+- Poprawka wykrywania referencji plików dla importu clawhub.ai
+
+**v2.1.5 (9 lutego 2026)**
+- Zmiana referencji {baseDir} na relatywne linki markdown
+- Rozszerzone zastrzeżenie bezpieczeństwa
+- Poprawka wykrywania plików clawhub.ai
+
+**v2.1.4 (9 lutego 2026)**
+- Zmiana wszystkich relatywnych linków markdown na absolutne (GitHub)
+- Poprawka kompatybilności z clawhub.ai
+
+**v2.1 (9 lutego 2026)**
+- Refactor do struktury progressive disclosure (główny plik ~400 linii)
+- Wydzielenie szczegółów do osobnych dokumentów referencyjnych
+- Zachowanie esencji kompetencji w głównym pliku
+
+**v2.0 (8 lutego 2026)**
+- Dodane zastrzeżenia prawne i techniczne
+- Złagodzenie twardych deklaracji AI/ML
+- Oznaczenie przykładów jako poglądowe
+
+**v1.0 (1 stycznia 2026)**
+- Pierwsza wersja dokumentu
 
 ## 📜 Licencja
 

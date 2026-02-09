@@ -1,14 +1,13 @@
 # SKILL - Autonomous KSeF Accountant Agent (EN)
 
-**Version:** 2.1.4
-**Date:** 2026-02-09
-**Legal status as of:** February 8, 2026
+**Version:** 2.2.0
 
-**DISCLAIMER:** This document constitutes an AI agent competency specification and is not an official position of the Ministry of Finance. The information presented may change. Before making business or legal decisions, consultation with a qualified tax advisor is recommended.
+**👤 For humans:** See [README.md](./README.md) for version history, deployment schedule, and documentation overview.
 
-**⚠️ SECURITY:** All code examples are for educational purposes only. Before production use: conduct security review, use dedicated tools, validate all inputs, apply principle of least privilege.
-
-**🌐 Polish Version:** This skill is also available in Polish at https://clawhub.ai/alexwoo-awso/ksef-accountant-pl
+**⚠️ SECURITY & VIRUSTOTAL NOTICE:**
+This skill contains educational code examples demonstrating secure coding practices for backup/restore operations. System commands shown (`pg_dump`, `psql`, `aws`, `systemctl`) are illustrative examples using SAFE methods (subprocess.run with argument lists, path validation, timeouts).
+**NOT EXECUTABLE CODE** - This skill provides knowledge to an AI agent, not executable scripts.
+Before production use: conduct security review, use dedicated tools (pg_basebackup, AWS Backup), validate all inputs, apply principle of least privilege.
 
 ---
 
@@ -16,33 +15,6 @@
 
 I am an autonomous accountant-agent specializing in comprehensive handling of the National e-Invoice System (KSeF). I operate in the KSeF 2.0 environment with FA(3) structure. I can perform accounting tasks related to electronic invoicing in Poland, supporting users in maintaining compliance with applicable regulations.
 
----
-
-## 📅 Legal Status (Summary)
-
-**NOTE:** The KSeF implementation schedule and regulation details may change.
-
-**📄 Legal details:** `{baseDir}/ksef-legal-status.md`
-
-### Key Dates (planned)
-- **February 1, 2026** - KSeF 2.0 production, FA(3) mandatory (for companies >200 million PLN revenue in 2024)
-- **April 1, 2026** - mandatory issuance for companies ≤200 million PLN
-- **January 1, 2027** - mandatory issuance for microenterprises
-- **December 31, 2026** - planned end of grace period (no penalties)
-
-### Technical Environment
-```
-DEMO:       https://ksef-demo.mf.gov.pl
-PRODUCTION: https://ksef.mf.gov.pl
-API DOCS:   https://ksef.mf.gov.pl/api/docs
-```
-
-**Requirements:**
-- Structure: FA(3) ver. 1-0E
-- Format: XML compliant with schema
-- Validation: automatic upon receipt
-
----
 
 ## 🎓 Core Competencies
 
@@ -74,7 +46,7 @@ POST /api/online/Query/Invoice/Sync
 {"queryCriteria": {"type": "range", ...}}
 ```
 
-**📄 Full API documentation:** `{baseDir}/ksef-api-reference.md`
+**📄 Full API documentation:** [ksef-api-reference.md](./ksef-api-reference.md)
 
 ---
 
@@ -89,7 +61,7 @@ POST /api/online/Query/Invoice/Sync
 
 **NOTE:** XML examples are for illustrative purposes only.
 
-**📄 FA(3) examples:** `{baseDir}/ksef-fa3-examples.md`
+**📄 FA(3) examples:** [ksef-fa3-examples.md](./ksef-fa3-examples.md)
 
 ---
 
@@ -107,7 +79,7 @@ Query KSeF → Download XML → AI Classify → Book entry
 Dr 400-500 (Expenses) + Dr 221 (VAT) | Cr 201 (Payables)
 ```
 
-**📄 Detailed accounting workflows:** `{baseDir}/ksef-accounting-workflows.md`
+**📄 Detailed accounting workflows:** [ksef-accounting-workflows.md](./ksef-accounting-workflows.md)
 
 ---
 
@@ -125,7 +97,7 @@ Dr 400-500 (Expenses) + Dr 221 (VAT) | Cr 201 (Payables)
 - 400-406: External services (transport, IT, legal, marketing, accounting)
 - 500-502: Materials, energy, office supplies
 
-**📄 AI classification details:** `{baseDir}/ksef-ai-features.md#klasyfikacja`
+**📄 AI classification details:** [ksef-ai-features.md](./ksef-ai-features.md#klasyfikacja)
 
 ---
 
@@ -140,7 +112,7 @@ Dr 400-500 (Expenses) + Dr 221 (VAT) | Cr 201 (Payables)
 
 **Auto-match if score ≥ 70**
 
-**📄 Algorithm details:** `{baseDir}/ksef-accounting-workflows.md#dopasowywanie-platnosci`
+**📄 Algorithm details:** [ksef-accounting-workflows.md](./ksef-accounting-workflows.md#dopasowywanie-platnosci)
 
 ---
 
@@ -152,7 +124,7 @@ Dr 400-500 (Expenses) + Dr 221 (VAT) | Cr 201 (Payables)
 
 **Handling:** 2 transfers (net + VAT to separate accounts)
 
-**📄 MPP details:** `{baseDir}/ksef-accounting-workflows.md#mpp`
+**📄 MPP details:** [ksef-accounting-workflows.md](./ksef-accounting-workflows.md#mpp)
 
 ---
 
@@ -164,7 +136,7 @@ Dr 400-500 (Expenses) + Dr 221 (VAT) | Cr 201 (Payables)
 - ✅ JPK_V7M (monthly XML)
 - ✅ JPK_V7K (quarterly XML)
 
-**NOTE:** XML examples are for illustrative purposes only. **📄 JPK_V7 examples:** `{baseDir}/ksef-jpk-examples.md`
+**NOTE:** XML examples are for illustrative purposes only. **📄 JPK_V7 examples:** ksef-jpk-examples.md (file not found in repository)
 
 ---
 
@@ -184,7 +156,7 @@ graph LR
 - Reversal of original + new value
 - Differential method
 
-**📄 Correction details:** `{baseDir}/ksef-accounting-workflows.md#korekty`
+**📄 Correction details:** [ksef-accounting-workflows.md](./ksef-accounting-workflows.md#korekty)
 
 ---
 
@@ -202,7 +174,7 @@ graph LR
 - ✅ 3-2-1 backup strategy
 - ✅ Disaster recovery (sync with KSeF)
 
-**📄 Compliance details:** `{baseDir}/ksef-security-compliance.md`
+**📄 Compliance details:** [ksef-security-compliance.md](./ksef-security-compliance.md)
 
 ---
 
@@ -218,7 +190,7 @@ graph LR
 
 **Action:** Flagging for manual review + HIGH alert
 
-**📄 Fraud detection details:** `{baseDir}/ksef-ai-features.md#fraud-detection`
+**📄 Fraud detection details:** [ksef-ai-features.md](./ksef-ai-features.md#fraud-detection)
 
 ---
 
@@ -234,7 +206,7 @@ graph LR
 
 **Use:** Forecast monthly income/expenses
 
-**📄 Prediction details:** `{baseDir}/ksef-ai-features.md#cash-flow`
+**📄 Prediction details:** [ksef-ai-features.md](./ksef-ai-features.md#cash-flow)
 
 ---
 
@@ -248,7 +220,7 @@ graph LR
 - ✅ CRM (Salesforce, HubSpot) - invoice generation from opportunities
 - ✅ Custom API - REST endpoints for external systems
 
-**📄 Integration details:** `{baseDir}/ksef-integrations.md`
+**📄 Integration details:** ksef-integrations.md (documentation to be created)
 
 ---
 
@@ -263,7 +235,7 @@ graph LR
 - Detected anomalies
 - Fraud alerts
 
-**📄 Example dashboard:** `{baseDir}/ksef-monitoring.md`
+**📄 Example dashboard:** ksef-monitoring.md (documentation to be created)
 
 ---
 
@@ -281,13 +253,13 @@ graph LR
 **Causes:** Mismatched amount / missing data / split payment
 **Solution:** Extended search (±2%, ±14 days), check MPP
 
-**📄 Full troubleshooting guide:** `{baseDir}/ksef-troubleshooting.md`
+**📄 Full troubleshooting guide:** [ksef-troubleshooting.md](./ksef-troubleshooting.md)
 
 ---
 
 ## 📚 Resources and Documentation
 
-### Official
+### KSeF Official Resources
 - KSeF Portal: https://ksef.podatki.gov.pl
 - Demo: https://ksef-demo.mf.gov.pl
 - Production: https://ksef.mf.gov.pl
@@ -299,75 +271,14 @@ graph LR
 - ksef-client-csharp: https://github.com/CIRFMF/ksef-client-csharp
 - ksef-latarnia: https://github.com/CIRFMF/ksef-latarnia
 
-### Internal documentation (for humans)
-1. [Legal status and schedule](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-legal-status.md)
-2. [API Reference](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-api-reference.md)
-3. [FA(3) Examples](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-fa3-examples.md)
-4. [Accounting workflows](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-accounting-workflows.md)
-5. [AI features](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-ai-features.md)
-6. [Integrations](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-integrations.md)
-7. [Security & Compliance](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-security-compliance.md)
-8. [Troubleshooting](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-troubleshooting.md)
-9. [Monitoring](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-monitoring.md)
-
-### Internal documentation (for AI agents)
-1. `{baseDir}/ksef-legal-status.md` - Legal status and schedule
-2. `{baseDir}/ksef-api-reference.md` - API Reference
-3. `{baseDir}/ksef-fa3-examples.md` - FA(3) Examples
-4. `{baseDir}/ksef-accounting-workflows.md` - Accounting workflows
-5. `{baseDir}/ksef-ai-features.md` - AI features
-6. `{baseDir}/ksef-integrations.md` - Integrations
-7. `{baseDir}/ksef-security-compliance.md` - Security & Compliance
-8. `{baseDir}/ksef-troubleshooting.md` - Troubleshooting
-9. `{baseDir}/ksef-monitoring.md` - Monitoring
-
----
-
-## 🔄 Version History
-
-**v2.1.4 (February 9, 2026)**
-- Changed all relative markdown links to absolute (GitHub)
-- Fixed compatibility with clawhub.ai
-
-**v2.1 (February 9, 2026)**
-- Refactoring to progressive disclosure structure (main file ~400 lines)
-- Extracted details to separate reference documents
-- Maintained essence of competencies in main file
-
-**v2.0 (February 8, 2026)**
-- Added legal and technical disclaimers
-- Softened hard AI/ML declarations
-- Marked examples as illustrative
-
-**v1.0 (January 1, 2026)**
-- First version of document
-
----
-
-## ⚡ Quick Start
-
-### For new users:
-1. Read [Legal status](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-legal-status.md) - check if obligation applies to you
-2. Review [API Reference](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-api-reference.md) - integration basics
-3. See [FA(3) Examples](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-fa3-examples.md) - invoice structure
-
-### For integrators:
-1. [API Reference](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-api-reference.md) - complete endpoint documentation
-2. [Integrations](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-integrations.md) - examples for ERP/CRM/Bank
-3. [Security & Compliance](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-security-compliance.md) - security requirements
-
-### For accountants:
-1. [Accounting workflows](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-accounting-workflows.md) - automation
-2. [AI features](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-ai-features.md) - classification and matching
-3. [Monitoring](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-monitoring.md) - KPIs and dashboards
-
----
-
-## 📞 Support
-
-**Technical issues:** Check [Troubleshooting](https://github.com/alexwoo-awso/skill/blob/main/ksef-accountant-en/ksef-troubleshooting.md)
-**Legal questions:** Consult with tax advisor
-**Issues:** github.com/CIRFMF
+### Internal Documentation (Reference Files)
+1. [ksef-legal-status.md](./ksef-legal-status.md) - Legal status and schedule
+2. [ksef-api-reference.md](./ksef-api-reference.md) - API Reference
+3. [ksef-fa3-examples.md](./ksef-fa3-examples.md) - FA(3) Examples
+4. [ksef-accounting-workflows.md](./ksef-accounting-workflows.md) - Accounting workflows
+5. [ksef-ai-features.md](./ksef-ai-features.md) - AI features
+6. [ksef-security-compliance.md](./ksef-security-compliance.md) - Security & Compliance
+7. [ksef-troubleshooting.md](./ksef-troubleshooting.md) - Troubleshooting
 
 ---
 
