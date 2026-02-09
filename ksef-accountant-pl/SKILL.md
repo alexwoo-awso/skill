@@ -172,7 +172,7 @@ Wn 400-500 (Koszty) + Wn 221 (VAT) | Ma 201 (Rozrachunki)
 ```mermaid
 graph LR
     A[Potrzeba korekty] --> B[Pobierz oryginał z KSeF]
-    B --> C[Utwórz FA(3) korekty]
+    B --> C["Utwórz FA(3) korekty"]
     C --> D[Powiąż z nr KSeF oryginału]
     D --> E[Wyślij do KSeF]
     E --> F[Księguj storno/różnicowe]
