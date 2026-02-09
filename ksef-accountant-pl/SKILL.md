@@ -1,6 +1,6 @@
 # SKILL - Autonomiczna Księgowa KSeF Agent (PL)
 
-**Wersja:** 2.1.3
+**Wersja:** 2.1.4
 **Data:** 2026-02-09
 **Stan prawny na dzień:** 8 lutego 2026
 
@@ -325,7 +325,7 @@ graph LR
 
 ## 🔄 Historia Wersji
 
-**v2.1.3 (9 lutego 2026)**
+**v2.1.4 (9 lutego 2026)**
 - Zmiana wszystkich relatywnych linków markdown na absolutne (GitHub)
 - Poprawka kompatybilności z clawhub.ai
 

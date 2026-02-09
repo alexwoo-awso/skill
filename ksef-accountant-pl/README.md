@@ -52,10 +52,10 @@ Wszystkie pliki w root (flat hierarchy dla clawhub.ai):
 
 ## 📝 Wersja
 
-**2.1.3** - Agent-compatible links
+**2.1.4** - Agent-compatible links
 
 ### Changelog
-- **v2.1.3** - Zmiana wszystkich relatywnych linków markdown na absolutne (GitHub) dla kompatybilności z clawhub.ai
+- **v2.1.4** - Zmiana wszystkich relatywnych linków markdown na absolutne (GitHub) dla kompatybilności z clawhub.ai
 - **v2.1.2** - Fixed all internal links (moved files from docs/ to root)
 - **v2.1.1** - Security improvements (no `os.system`, added SECURITY.md)
 - **v2.1.0** - Progressive disclosure refactor

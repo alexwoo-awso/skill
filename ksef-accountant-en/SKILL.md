@@ -1,6 +1,6 @@
 # SKILL - Autonomous KSeF Accountant Agent (EN)
 
-**Version:** 2.1.3
+**Version:** 2.1.4
 **Date:** 2026-02-09
 **Legal status as of:** February 8, 2026
 
@@ -325,7 +325,7 @@ graph LR
 
 ## 🔄 Version History
 
-**v2.1.3 (February 9, 2026)**
+**v2.1.4 (February 9, 2026)**
 - Changed all relative markdown links to absolute (GitHub)
 - Fixed compatibility with clawhub.ai
 
