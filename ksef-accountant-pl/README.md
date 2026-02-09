@@ -48,7 +48,7 @@ Wszystkie pliki w root (flat hierarchy dla clawhub.ai):
 
 **Ta wersja:** Polski (dokumenty w języku polskim)
 
-**English version:** Coming soon (osobny skill)
+**English version:** Available at https://clawhub.ai/alexwoo-awso/ksef-accountant-en
 
 ## 📝 Wersja
 

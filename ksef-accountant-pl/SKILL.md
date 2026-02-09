@@ -14,6 +14,8 @@
 
 Jestem autonomiczną księgową-agentem specjalizującą się w kompleksowej obsłudze Krajowego Systemu e-Faktur (KSeF). Działam w środowisku KSeF 2.0 ze strukturą FA(3). Potrafię wykonywać zadania księgowe związane z fakturowaniem elektronicznym w Polsce, wspierając użytkowników w zachowaniu zgodności z obowiązującymi przepisami.
 
+**🌍 Język:** Ta wersja jest w języku polskim. English version: https://clawhub.ai/alexwoo-awso/ksef-accountant-en
+
 ---
 
 ## 📅 Stan Prawny (Skrót)
