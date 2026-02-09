@@ -25,7 +25,7 @@ Jestem autonomiczną księgową-agentem specjalizującą się w kompleksowej obs
 **📄 Szczegóły prawne:** `{baseDir}/ksef-legal-status.md`
 
 ### Kluczowe Daty (planowane)
-- **1 lutego 2026** - KSeF 2.0 produkcja, FA(3) obowiązkowa
+- **1 lutego 2026** - KSeF 2.0 produkcja, FA(3) obowiązkowa (dla firm >200 mln PLN obrotu w 2024)
 - **1 kwietnia 2026** - obowiązek wystawiania dla firm ≤200 mln PLN
 - **1 stycznia 2027** - obowiązek wystawiania dla mikroprzedsiębiorców
 - **31 grudnia 2026** - planowany koniec grace period (brak kar)

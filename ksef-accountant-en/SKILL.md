@@ -25,7 +25,7 @@ I am an autonomous accountant-agent specializing in comprehensive handling of th
 **📄 Legal details:** `{baseDir}/ksef-legal-status.md`
 
 ### Key Dates (planned)
-- **February 1, 2026** - KSeF 2.0 production, FA(3) mandatory
+- **February 1, 2026** - KSeF 2.0 production, FA(3) mandatory (for companies >200 million PLN revenue in 2024)
 - **April 1, 2026** - mandatory issuance for companies ≤200 million PLN
 - **January 1, 2027** - mandatory issuance for microenterprises
 - **December 31, 2026** - planned end of grace period (no penalties)
