@@ -24,23 +24,28 @@ Przed użyciem wzorców w środowisku produkcyjnym:
 
 ## Gwarancje platformy vs. skilla — weryfikacja przed instalacją
 
-Ten skill deklaruje `disableModelInvocation: true` w metadanych frontmatter SKILL.md. Jednak sam frontmatter to **deklaracja skilla, nie gwarancja platformy**. Wymuszanie tej flagi zależy wyłącznie od platformy hostingowej.
+Ten skill deklaruje flagi bezpieczeństwa w **dwóch źródłach**:
+- **Frontmatter SKILL.md** — zawiera `disableModelInvocation: true` (camelCase) oraz `disable-model-invocation: true` (kebab-case), a także deklaracje env vars z `secret: true` dla zmiennych zawierających dane uwierzytelniające.
+- **Manifest [`skill.json`](../skill.json)** — dedykowany plik maszynowo czytelny z pełnymi metadanymi bezpieczeństwa, deklaracjami env vars (z polem `secret` i `scope`) oraz ograniczeniami. Jest źródłem prawdy dla rejestrów i skanerów, które mogą nie parsować frontmatter YAML.
 
-**Znany problem:** Metadane rejestru (registry metadata) wyświetlane przez platformę mogą nie odzwierciedlać wartości z frontmatter. Jeśli platforma pokazuje `disable-model-invocation: not set` (lub pomija tę flagę), ochrona przed autonomicznym wywołaniem **nie jest aktywna** — niezależnie od tego, co deklaruje SKILL.md.
+Jednak **oba te źródła to deklaracje skilla, nie gwarancje platformy**. Wymuszanie tych flag zależy wyłącznie od platformy hostingowej.
+
+**Znany problem:** Metadane rejestru (registry metadata) wyświetlane przez platformę mogą nie odzwierciedlać wartości z frontmatter ani z `skill.json`. Jeśli platforma pokazuje `disable-model-invocation: not set` (lub pomija tę flagę), albo nie wyświetla zmiennych środowiskowych jako zarejestrowanych — ochrona **nie jest aktywna**, niezależnie od tego, co deklarują pliki skilla.
 
 **Obowiązkowa weryfikacja przed instalacją:**
 
-1. **Porównaj frontmatter z metadanymi rejestru** — po dodaniu skilla do platformy, otwórz widok metadanych rejestru. Zweryfikuj, że:
+1. **Porównaj metadane rejestru z frontmatter i `skill.json`** — po dodaniu skilla do platformy, otwórz widok metadanych rejestru. Zweryfikuj, że:
    - `disable-model-invocation` = `true`
+   - Zmienne środowiskowe `KSEF_TOKEN` i `KSEF_ENCRYPTION_KEY` są widoczne jako zarejestrowane sekrety
    - Inne flagi bezpieczeństwa na poziomie platformy (jeśli istnieją) są poprawnie ustawione
-   - Jeśli JAKIEKOLWIEK pole nie zgadza się z frontmatter — traktuj skill jako wyższego ryzyka
+   - Jeśli JAKIEKOLWIEK pole nie zgadza się z frontmatter/`skill.json` — traktuj skill jako wyższego ryzyka
 2. **Potwierdź izolację zmiennych środowiskowych** — zmienne (`KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`, `KSEF_BASE_URL`) nie mogą być logowane, wyświetlane w konwersacji ani dostępne dla innych skilli
 3. **Jeśli platforma NIE wymusza flagi `disableModelInvocation`:**
    - NIE konfiguruj żadnych zmiennych środowiskowych z danymi uwierzytelniającymi
    - NIE udostępniaj tokenów, certyfikatów ani kluczy szyfrowania
    - NIE zezwalaj na autonomiczne użycie skilla
    - Używaj wyłącznie w trybie ręcznym (jawna akcja użytkownika) i tylko ze środowiskiem DEMO (`https://ksef-demo.mf.gov.pl`)
-4. **Zgłoś rozbieżność** — jeśli metadane rejestru nie pasują do frontmatter, zgłoś to dostawcy platformy jako problem bezpieczeństwa wymagający naprawy
+4. **Zgłoś rozbieżność** — jeśli metadane rejestru nie pasują do frontmatter/`skill.json`, zgłoś to dostawcy platformy jako problem bezpieczeństwa wymagający naprawy. Podaj nazwę pliku `skill.json` jako alternatywne źródło metadanych, jeśli platforma nie parsuje frontmatter YAML
 
 ---
 
