@@ -1,6 +1,10 @@
 # Funkcje AI dla KSeF
 
-**UWAGA OGÓLNA:** Wszystkie funkcje AI/ML mają charakter wspierający i wymagają nadzoru personelu księgowego. Wskaźniki wydajności są celami projektowymi i mogą się różnić. Systemy AI nie podejmują wiążących decyzji podatkowych.
+**UWAGA OGÓLNA:** Cały kod w tym dokumencie to **koncepcyjna architektura referencyjna** — wzorce implementacyjne do adaptacji przez użytkownika w jego własnym systemie. Ten skill NIE uruchamia modeli ML, NIE wykonuje inferencji i NIE wymaga runtime'ów Python, sklearn, pandas ani żadnych innych zależności. Agent korzysta z tych wzorców wyłącznie jako bazy wiedzy do wyjaśniania algorytmów, projektowania pipeline'ów i pomocy w pisaniu kodu.
+
+**Zależności wymagane do implementacji (NIE zależności tego skilla):** sklearn, pandas, numpy — do zainstalowania przez użytkownika w jego środowisku.
+
+Wszystkie funkcje AI/ML mają charakter wspierający i wymagają nadzoru personelu księgowego. Wskaźniki wydajności są celami projektowymi i mogą się różnić. Systemy AI nie podejmują wiążących decyzji podatkowych.
 
 ---
 
@@ -494,3 +498,5 @@ def log_ai_decision(invoice, prediction, action):
 ---
 
 **Ostrzeżenie końcowe:** Wszystkie funkcje AI wymagają regularnego monitorowania, walidacji i nadzoru ze strony wykwalifikowanego personelu. Nie należy polegać wyłącznie na automatycznych decyzjach w sprawach podatkowych i księgowych.
+
+**Przypomnienie:** Powyższe przykłady kodu to architektura referencyjna. Ten skill nie zawiera wytrenowanych modeli, artefaktów ML ani plików wykonywalnych. Implementacja wymaga zainstalowania zależności (sklearn, pandas, numpy) i wytrenowania modeli na danych użytkownika w jego własnym środowisku.

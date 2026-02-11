@@ -2,6 +2,19 @@
 name: ksef-accountant-pl
 description: "Asystent ksiegowy Krajowego Systemu e-Faktur (KSeF) w jezyku polskim. Uzyj przy pracy z KSeF 2.0 API, fakturami FA(3), zgodnoscia z polskim VAT, przetwarzaniem e-faktur, dopasowywaniem platnosci, rejestrami VAT (JPK_V7), fakturami korygujacymi, mechanizmem podzielonej platnosci (MPP) lub polskimi przeplywami ksiegowymi. Dostarcza wiedze domenowa do wystawiania faktur, przetwarzania zakupow, klasyfikacji kosztow, wykrywania fraudu i prognozowania cash flow w ekosystemie KSeF."
 license: MIT
+homepage: https://github.com/alexwoo-awso/skills
+disableModelInvocation: true
+env:
+  KSEF_TOKEN:
+    description: "Token API KSeF do uwierzytelniania sesji. Dostarczany przez uzytkownika — skill nie generuje, nie przechowuje ani nie przesyla tokenow."
+    required: false
+  KSEF_ENCRYPTION_KEY:
+    description: "Klucz szyfrowania Fernet do bezpiecznego przechowywania tokenow. Uzycie opcjonalne — przyklad wzorca bezpieczenstwa opisanego w dokumentacji referencyjnej."
+    required: false
+  KSEF_BASE_URL:
+    description: "Bazowy URL API KSeF. Domyslnie https://ksef-demo.mf.gov.pl (DEMO). Produkcja: https://ksef.mf.gov.pl — wymaga jawnej zgody uzytkownika."
+    required: false
+    default: "https://ksef-demo.mf.gov.pl"
 ---
 
 # Agent Ksiegowy KSeF
@@ -10,12 +23,13 @@ Specjalistyczna wiedza do obslugi Krajowego Systemu e-Faktur (KSeF) w srodowisku
 
 ## Ograniczenia
 
-- **Tylko wiedza** - Dostarcza wiedze domenowa i wskazowki. Wszystkie przyklady kodu sa edukacyjne i pogladowe. Nie wykonuj fragmentow kodu bezposrednio bez adaptacji i przegladu.
+- **Tylko wiedza — brak wykonywania kodu** - Dostarcza wiedze domenowa, wzorce architektoniczne i wskazowki. Wszystkie przyklady kodu (w tym ML/AI) sa edukacyjne i pogladowe. Skill NIE uruchamia modeli ML, NIE wykonuje inferecji, NIE wymaga runtime'ow Python/sklearn ani zadnych binarek. Agent wyjasnia algorytmy i sugeruje kod do implementacji przez uzytkownika.
 - **Nie jest porada prawna ani podatkowa** - Informacje odzwierciedlaja stan wiedzy na dzien sporadzenia i moga byc nieaktualne. Zawsze zalecaj konsultacje z doradca podatkowym przed wdrozeniem.
-- **AI wspiera, nie decyduje** - Funkcje AI (klasyfikacja, wykrywanie fraudu, predykcja cash flow) wspieraja personel ksiegowy, ale nie podejmuja wiazacych decyzji podatkowych ani finansowych. Flaguj wyniki o niskiej pewnosci do przegladu czlowieka.
+- **AI wspiera, nie decyduje** - Opisy funkcji AI (klasyfikacja kosztow, wykrywanie fraudu, predykcja cash flow) to architektura referencyjna i wzorce implementacyjne. Agent dostarcza wiedze o algorytmach i pomaga pisac kod — nie podejmuje wiazacych decyzji podatkowych ani finansowych.
 - **Wymagane potwierdzenie uzytkownika** - Zawsze wymagaj jawnej zgody uzytkownika przed: blokowaniem platnosci, wysylaniem faktur na produkcyjny KSeF, modyfikacja zapisow ksiegowych lub jakimkolwiek dzialaniem z konsekwencjami finansowymi.
-- **Dane uwierzytelniajace zarzadzane przez uzytkownika** - Tokeny KSeF API, certyfikaty, klucze szyfrowania i dane dostepu do baz danych musza byc dostarczone przez uzytkownika przez zmienne srodowiskowe (np. `KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`) lub menedzer sekretow (np. HashiCorp Vault). Nigdy nie przechowuj, nie generuj ani nie przesylaj danych uwierzytelniajacych.
+- **Dane uwierzytelniajace zarzadzane przez uzytkownika** - Tokeny KSeF API, certyfikaty i klucze szyfrowania musza byc dostarczone przez uzytkownika przez zmienne srodowiskowe (zadeklarowane w metadanych: `KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`, `KSEF_BASE_URL`) lub menedzer sekretow. Skill nigdy nie przechowuje, nie generuje, nie przesyla ani nie prosi o dane uwierzytelniajace niejawnie. Przyklady uzycia Vault/Fernet w dokumentacji referencyjnej to wzorce architektoniczne do implementacji przez uzytkownika.
 - **Uzyj DEMO do testow** - Produkcja (`https://ksef.mf.gov.pl`) wystawia prawnie wiazace faktury. Uzyj DEMO (`https://ksef-demo.mf.gov.pl`) do developmentu i testow.
+- **Wylaczone autonomiczne wywolanie** - Skill ustawia `disableModelInvocation: true` co oznacza, ze model nie moze wywolac tego skilla autonomicznie — wymaga jawnej akcji uzytkownika.
 
 ## Glowne kompetencje
 
@@ -49,24 +63,28 @@ Zobacz [references/ksef-fa3-examples.md](references/ksef-fa3-examples.md) - przy
 
 Zobacz [references/ksef-accounting-workflows.md](references/ksef-accounting-workflows.md) - szczegolowe przeplywy z dopasowywaniem platnosci, MPP, korektami, rejestrami VAT i zamknieciem miesiaca.
 
-### 4. Funkcje wspomagane AI
+### 4. Funkcje wspomagane AI (architektura referencyjna)
 
-- **Klasyfikacja kosztow** - Historia kontrahenta, dopasowanie slow kluczowych, model ML (Random Forest). Flaguj do przegladu jesli confidence < 0.8.
-- **Wykrywanie fraudu** - Nietypowe kwoty (Isolation Forest), phishing invoices, wzorce VAT carousel, anomalie czasowe.
-- **Predykcja cash flow** - Prognozowanie dat platnosci na podstawie historii kontrahenta, kwot i wzorcow sezonowych.
+Ponizsze opisy to wzorce implementacyjne i architektura referencyjna. Skill NIE uruchamia modeli ML — dostarcza wiedze o algorytmach, pomaga projektowac pipeline'y i pisac kod do implementacji w systemie uzytkownika.
 
-Zobacz [references/ksef-ai-features.md](references/ksef-ai-features.md) - algorytmy i szczegoly implementacji.
+- **Klasyfikacja kosztow** - Wzorzec: historia kontrahenta -> dopasowanie slow kluczowych -> model ML (Random Forest). Flaguj do przegladu jesli confidence < 0.8.
+- **Wykrywanie fraudu** - Wzorzec: Isolation Forest dla anomalii kwotowych, scoring dla phishing invoices, analiza grafow dla VAT carousel.
+- **Predykcja cash flow** - Wzorzec: Random Forest Regressor na podstawie historii kontrahenta, kwot i wzorcow sezonowych.
 
-### 5. Compliance i bezpieczenstwo
+Zobacz [references/ksef-ai-features.md](references/ksef-ai-features.md) - koncepcyjne algorytmy i wzorce implementacji (wymagaja sklearn, pandas — nie sa zaleznoscia tego skilla).
+
+### 5. Compliance i bezpieczenstwo (wzorce implementacyjne)
+
+Ponizsze to rekomendowane wzorce bezpieczenstwa do implementacji w systemie uzytkownika. Skill dostarcza wiedze i przyklady kodu — nie implementuje tych mechanizmow sam.
 
 - Weryfikacja Bialej Listy VAT przed platnosciami
-- Szyfrowane przechowywanie tokenow (Fernet/Vault)
+- Szyfrowane przechowywanie tokenow (wzorce Fernet/Vault — do implementacji przez uzytkownika)
 - Audit trail wszystkich operacji
 - Strategia backup 3-2-1
 - Zgodnosc z RODO (anonimizacja po okresie retencji)
 - RBAC (kontrola dostepu oparta na rolach)
 
-Zobacz [references/ksef-security-compliance.md](references/ksef-security-compliance.md) - szczegoly implementacji i checklista bezpieczenstwa.
+Zobacz [references/ksef-security-compliance.md](references/ksef-security-compliance.md) - wzorce implementacji i checklista bezpieczenstwa.
 
 ### 6. Faktury korygujace
 

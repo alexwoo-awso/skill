@@ -3,7 +3,11 @@
 Wymagania bezpieczeństwa, zgodności i najlepsze praktyki.
 
 **⚠️ OSTRZEŻENIE BEZPIECZEŃSTWA:**
-Wszystkie przykłady kodu w tym dokumencie mają charakter **edukacyjny i koncepcyjny**. Przed użyciem w środowisku produkcyjnym:
+Wszystkie przykłady kodu w tym dokumencie mają charakter **edukacyjny i koncepcyjny** — to wzorce architektoniczne do implementacji przez użytkownika w jego własnym systemie. Ten skill NIE implementuje tych mechanizmów, NIE przechowuje tokenów, NIE łączy się z Vault i NIE zarządza kluczami szyfrowania.
+
+**Zmienne środowiskowe** wymienione w tym dokumencie (np. `KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`) są zadeklarowane w metadanych skilla jako opcjonalne. Skill nie prosi o nie niejawnie — jeśli użytkownik je udostępni, agent może je wykorzystać w sugerowanym kodzie. Wszystkie zmienne są opisane w sekcji `env` pliku SKILL.md.
+
+Przed użyciem wzorców w środowisku produkcyjnym:
 1. Przeprowadź security review
 2. Użyj dedykowanych, przetestowanych narzędzi zamiast własnych implementacji
 3. Nigdy nie uruchamiaj niezweryfikowanego kodu z zewnętrznych źródeł
