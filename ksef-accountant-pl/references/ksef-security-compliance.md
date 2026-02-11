@@ -7,12 +7,27 @@ Wszystkie przykłady kodu w tym dokumencie mają charakter **edukacyjny i koncep
 
 **Zmienne środowiskowe** wymienione w tym dokumencie (np. `KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`) są zadeklarowane w metadanych skilla jako opcjonalne. Skill nie prosi o nie niejawnie — jeśli użytkownik je udostępni, agent może je wykorzystać w sugerowanym kodzie. Wszystkie zmienne są opisane w sekcji `env` pliku SKILL.md.
 
+**NIGDY nie wklejaj tokenów, kluczy szyfrowania, certyfikatów ani innych danych uwierzytelniających bezpośrednio w rozmowie z agentem.** Używaj wyłącznie:
+- Zmiennych środowiskowych platformy (env vars)
+- Menedżera sekretów (np. HashiCorp Vault, AWS Secrets Manager)
+- Tymczasowych zmiennych sesji (ephemeral env vars)
+
 Przed użyciem wzorców w środowisku produkcyjnym:
 1. Przeprowadź security review
 2. Użyj dedykowanych, przetestowanych narzędzi zamiast własnych implementacji
 3. Nigdy nie uruchamiaj niezweryfikowanego kodu z zewnętrznych źródeł
 4. Implementuj principle of least privilege
 5. Regularnie aktualizuj zależności i przeprowadzaj audyty bezpieczeństwa
+6. Testuj wyłącznie na środowisku DEMO (`https://ksef-demo.mf.gov.pl`) — nigdy na produkcji
+
+---
+
+## Gwarancje platformy vs. skilla
+
+Ten skill deklaruje `disableModelInvocation: true` w metadanych SKILL.md, ale wymuszanie tej flagi zależy od platformy hostingowej. Przed instalacją:
+- Zweryfikuj, że platforma faktycznie honoruje flagę `disableModelInvocation`
+- Potwierdź, że zmienne środowiskowe są izolowane i nie są logowane/wyświetlane w konwersacji
+- Jeśli platforma nie wymusza tych ustawień, nie udostępniaj skilla z dostępem do produkcyjnych danych uwierzytelniających
 
 ---
 

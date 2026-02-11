@@ -3,6 +3,7 @@ name: ksef-accountant-pl
 description: "Asystent ksiegowy Krajowego Systemu e-Faktur (KSeF) w jezyku polskim. Uzyj przy pracy z KSeF 2.0 API, fakturami FA(3), zgodnoscia z polskim VAT, przetwarzaniem e-faktur, dopasowywaniem platnosci, rejestrami VAT (JPK_V7), fakturami korygujacymi, mechanizmem podzielonej platnosci (MPP) lub polskimi przeplywami ksiegowymi. Dostarcza wiedze domenowa do wystawiania faktur, przetwarzania zakupow, klasyfikacji kosztow, wykrywania fraudu i prognozowania cash flow w ekosystemie KSeF."
 license: MIT
 homepage: https://github.com/alexwoo-awso/skills
+source: https://github.com/alexwoo-awso/skills/tree/main/ksef-accountant-pl
 disableModelInvocation: true
 env:
   KSEF_TOKEN:
@@ -21,15 +22,29 @@ env:
 
 Specjalistyczna wiedza do obslugi Krajowego Systemu e-Faktur (KSeF) w srodowisku KSeF 2.0 ze struktura FA(3). Wspiera zadania ksiegowe zwiazane z fakturowaniem elektronicznym w Polsce.
 
+## Model bezpieczenstwa
+
+Ten skill jest **wylacznie instrukcyjny** — sklada sie z plikow Markdown zawierajacych wiedze domenowa, wzorce architektoniczne i przyklady kodu. Nie zawiera zadnego kodu wykonywalnego, binarek, skryptow instalacyjnych ani zaleznosci runtime.
+
+**Gwarancje po stronie skilla:**
+- `disableModelInvocation: true` — zadeklarowane w metadanych frontmatter. Skill nie powinien byc wywolywany autonomicznie przez model.
+- Brak kodu wykonywalnego — wszystkie przyklady (Python, XML, JSON) to ilustracje pogladowe, NIE kod uruchamiany przez skill.
+- Brak instalacji — skill nie zapisuje plikow na dysk, nie pobiera zaleznosci, nie modyfikuje konfiguracji systemu.
+
+**Gwarancje zalezne od platformy (wazne):**
+- Wymuszanie flagi `disableModelInvocation` zalezy od platformy hostingowej. Przed instalacja zweryfikuj, ze platforma faktycznie honoruje te flage.
+- Izolacja zmiennych srodowiskowych (env vars) zalezy od platformy. Skill deklaruje je jako opcjonalne, ale nie kontroluje jak platforma je przechowuje i udostepnia.
+- Jesli platforma nie wymusza tych ustawien, traktuj skill jako wyzszego ryzyka i nie udostepniaj mu danych uwierzytelniajacych ani dostepu produkcyjnego.
+
 ## Ograniczenia
 
-- **Tylko wiedza — brak wykonywania kodu** - Dostarcza wiedze domenowa, wzorce architektoniczne i wskazowki. Wszystkie przyklady kodu (w tym ML/AI) sa edukacyjne i pogladowe. Skill NIE uruchamia modeli ML, NIE wykonuje inferecji, NIE wymaga runtime'ow Python/sklearn ani zadnych binarek. Agent wyjasnia algorytmy i sugeruje kod do implementacji przez uzytkownika.
+- **Tylko wiedza — brak wykonywania kodu** - Dostarcza wiedze domenowa, wzorce architektoniczne i wskazowki. Wszystkie przyklady kodu (w tym ML/AI) sa edukacyjne i pogladowe. Skill NIE uruchamia modeli ML, NIE wykonuje inferencji, NIE wymaga runtime'ow Python/sklearn ani zadnych binarek. Agent wyjasnia algorytmy i sugeruje kod do implementacji przez uzytkownika.
 - **Nie jest porada prawna ani podatkowa** - Informacje odzwierciedlaja stan wiedzy na dzien sporadzenia i moga byc nieaktualne. Zawsze zalecaj konsultacje z doradca podatkowym przed wdrozeniem.
 - **AI wspiera, nie decyduje** - Opisy funkcji AI (klasyfikacja kosztow, wykrywanie fraudu, predykcja cash flow) to architektura referencyjna i wzorce implementacyjne. Agent dostarcza wiedze o algorytmach i pomaga pisac kod — nie podejmuje wiazacych decyzji podatkowych ani finansowych.
 - **Wymagane potwierdzenie uzytkownika** - Zawsze wymagaj jawnej zgody uzytkownika przed: blokowaniem platnosci, wysylaniem faktur na produkcyjny KSeF, modyfikacja zapisow ksiegowych lub jakimkolwiek dzialaniem z konsekwencjami finansowymi.
-- **Dane uwierzytelniajace zarzadzane przez uzytkownika** - Tokeny KSeF API, certyfikaty i klucze szyfrowania musza byc dostarczone przez uzytkownika przez zmienne srodowiskowe (zadeklarowane w metadanych: `KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`, `KSEF_BASE_URL`) lub menedzer sekretow. Skill nigdy nie przechowuje, nie generuje, nie przesyla ani nie prosi o dane uwierzytelniajace niejawnie. Przyklady uzycia Vault/Fernet w dokumentacji referencyjnej to wzorce architektoniczne do implementacji przez uzytkownika.
+- **Dane uwierzytelniajace zarzadzane przez uzytkownika** - Tokeny KSeF API, certyfikaty i klucze szyfrowania musza byc dostarczone przez uzytkownika przez zmienne srodowiskowe (zadeklarowane w metadanych: `KSEF_TOKEN`, `KSEF_ENCRYPTION_KEY`, `KSEF_BASE_URL`) lub menedzer sekretow. Skill nigdy nie przechowuje, nie generuje, nie przesyla ani nie prosi o dane uwierzytelniajace niejawnie. **NIGDY nie wklejaj danych uwierzytelniajacych (tokenow, kluczy, certyfikatow) bezposrednio w rozmowie z agentem** — uzyj zmiennych srodowiskowych lub menedzera sekretow platformy. Przyklady uzycia Vault/Fernet w dokumentacji referencyjnej to wzorce architektoniczne do implementacji przez uzytkownika.
 - **Uzyj DEMO do testow** - Produkcja (`https://ksef.mf.gov.pl`) wystawia prawnie wiazace faktury. Uzyj DEMO (`https://ksef-demo.mf.gov.pl`) do developmentu i testow.
-- **Wylaczone autonomiczne wywolanie** - Skill ustawia `disableModelInvocation: true` co oznacza, ze model nie moze wywolac tego skilla autonomicznie — wymaga jawnej akcji uzytkownika.
+- **Wylaczone autonomiczne wywolanie** - Skill ustawia `disableModelInvocation: true` w metadanych frontmatter. Oznacza to, ze model nie powinien wywolywac tego skilla autonomicznie — wymaga jawnej akcji uzytkownika. Wymuszanie tej flagi zalezy od platformy (patrz sekcja "Model bezpieczenstwa" powyzej).
 
 ## Glowne kompetencje
 
@@ -65,7 +80,7 @@ Zobacz [references/ksef-accounting-workflows.md](references/ksef-accounting-work
 
 ### 4. Funkcje wspomagane AI (architektura referencyjna)
 
-Ponizsze opisy to wzorce implementacyjne i architektura referencyjna. Skill NIE uruchamia modeli ML — dostarcza wiedze o algorytmach, pomaga projektowac pipeline'y i pisac kod do implementacji w systemie uzytkownika.
+Ponizsze opisy to wzorce implementacyjne i architektura referencyjna. Skill NIE uruchamia modeli ML — dostarcza wiedze o algorytmach, pomaga projektowac pipeline'y i pisac kod do implementacji w systemie uzytkownika. Przyklady kodu w plikach referencyjnych (Python, sklearn, pandas) to pseudokod pogladowy — skill nie zawiera wytrenowanych modeli, artefaktow ML ani plikow wykonywalnych.
 
 - **Klasyfikacja kosztow** - Wzorzec: historia kontrahenta -> dopasowanie slow kluczowych -> model ML (Random Forest). Flaguj do przegladu jesli confidence < 0.8.
 - **Wykrywanie fraudu** - Wzorzec: Isolation Forest dla anomalii kwotowych, scoring dla phishing invoices, analiza grafow dla VAT carousel.
